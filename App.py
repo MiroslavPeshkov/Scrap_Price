@@ -65,6 +65,9 @@ all_links2 = [
 all_links3 = [
     'https://www.symmetron.ru/catalog/aktivnye-komponenty/optoelektronika/svetodiody/svetodiody-belye/filter/clear/apply/']
 
+PATH = os.getcwd()
+PATH_CSV = PATH + '/PARSING.csv'
+st.write(PATH_CSV)
 
 @st.experimental_singleton
 def installff():

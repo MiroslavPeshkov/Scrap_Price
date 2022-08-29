@@ -199,7 +199,7 @@ def first():
       except:
           Datasheet = None
 
-      with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+      with open(PATH_CSV, 'a', newline='', encoding='utf-8') as csvfile:
           datawriter = csv.writer(csvfile, delimiter=',',
                                   quotechar='"', quoting=csv.QUOTE_MINIMAL)
           datawriter.writerow(
@@ -305,7 +305,7 @@ def second():
         except:
             Datasheet = None
 
-        with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+        with open(PATH_CSV, 'a', newline='', encoding='utf-8') as csvfile:
             datawriter = csv.writer(csvfile, delimiter=',',
                                     quotechar='"', quoting=csv.QUOTE_MINIMAL)
             datawriter.writerow(
@@ -416,7 +416,7 @@ def third():
         Uмакс = None
         Datasheet = None
 
-        with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+        with open(PATH_CSV, 'a', newline='', encoding='utf-8') as csvfile:
             datawriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             datawriter.writerow(
                 [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
@@ -557,7 +557,7 @@ def forth():
 
         Uтип = None
 
-        with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+        with open(PATH_CSV, 'a', newline='', encoding='utf-8') as csvfile:
             datawriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             datawriter.writerow(
                 [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
@@ -567,7 +567,7 @@ def forth():
 
 
 def clean_data():
-    df_all = pd.read_csv('PARSING.csv')
+    df_all = pd.read_csv(PATH_CSV)
     df_all = df_all.drop_duplicates(subset=['Дата', 'Артикул'])
     df_all = df_all.dropna(subset=['Uнoм,В', 'CRI', 'Цена', 'Остаток', 'CCT'])
     df_all['Цена'] = df_all['Цена'].fillna('0')

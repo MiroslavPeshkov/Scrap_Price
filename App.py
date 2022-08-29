@@ -99,517 +99,517 @@ def connect_to_google_sheet(name):
     return worksheet
 
 
-st.title('Парсинг цен')
-button = st.button('Пуск')
-if button:
-    def first():
-        CONCURENT = 'Neon'
-        ALL_URLS = []
-        for link in all_links:
-            res = requests.get(link)
-            time.sleep(0.5)
-            soup = BeautifulSoup(res.text, 'lxml')
-            pignatation = soup.find('ul', {'class': 'pagination'}).find_all('li')[-1].find('a').get('href').split('=')[
-                -1]
-            pignatation = int(pignatation)
-            all_urls = soup.find_all('a', {'itemprop': 'url'})
-            all_urls_ = [i.get('href') for i in all_urls]
-            ALL_URLS.extend(all_urls_)
-            print('PAG - ', pignatation)
-            for num in range(2, pignatation + 1):  # pignatation + 1
-                time.sleep(1.5)
-                ur = f'{all_links[0]}?page={num}'
-                res = requests.get(ur)
-                print('Work - ', ur)
-                soup = BeautifulSoup(res.text, 'lxml')
-                all_urls = soup.find_all('a', {'itemprop': 'url'})
-                all_urls_ = [i.get('href') for i in all_urls]
-                ALL_URLS.extend(all_urls_)
+def first():
+  CONCURENT = 'Neon'
+  ALL_URLS = []
+  for link in all_links:
+      res = requests.get(link)
+      time.sleep(0.5)
+      soup = BeautifulSoup(res.text, 'lxml')
+      pignatation = soup.find('ul', {'class': 'pagination'}).find_all('li')[-1].find('a').get('href').split('=')[
+          -1]
+      pignatation = int(pignatation)
+      all_urls = soup.find_all('a', {'itemprop': 'url'})
+      all_urls_ = [i.get('href') for i in all_urls]
+      ALL_URLS.extend(all_urls_)
+      print('PAG - ', pignatation)
+      for num in range(2, pignatation + 1):  # pignatation + 1
+          time.sleep(1.5)
+          ur = f'{all_links[0]}?page={num}'
+          res = requests.get(ur)
+          print('Work - ', ur)
+          soup = BeautifulSoup(res.text, 'lxml')
+          all_urls = soup.find_all('a', {'itemprop': 'url'})
+          all_urls_ = [i.get('href') for i in all_urls]
+          ALL_URLS.extend(all_urls_)
 
-        for l in ALL_URLS:
-            time.sleep(0.5)
-            print('W - ', l)
-            now_date = datetime.datetime.now().strftime("%Y-%m-%d")
-            res = requests.get(l)
-            soup = BeautifulSoup(res.text, 'lxml')
+  for l in ALL_URLS:
+      time.sleep(0.5)
+      print('W - ', l)
+      now_date = datetime.datetime.now().strftime("%Y-%m-%d")
+      res = requests.get(l)
+      soup = BeautifulSoup(res.text, 'lxml')
 
-            price = soup.find('span', {'class': 'product-price-product'}).text.replace('р.', '')
+      price = soup.find('span', {'class': 'product-price-product'}).text.replace('р.', '')
 
-            articl = soup.find('h1', {'itemprop': 'name'}).text.strip()
+      articl = soup.find('h1', {'itemprop': 'name'}).text.strip()
 
-            nalich = soup.find(text=re.compile('Наличие: ')).find_next('span').text
-            nalich_f = re.findall('[0-9]+', nalich.replace('\xa0', ''))
-            nalich_f = ''.join(nalich_f)
+      nalich = soup.find(text=re.compile('Наличие: ')).find_next('span').text
+      nalich_f = re.findall('[0-9]+', nalich.replace('\xa0', ''))
+      nalich_f = ''.join(nalich_f)
 
-            try:
-                pat_type = re.compile('\d+')
-                type_raz = soup.find(text=re.compile('Корпус')).find_next('td').text
-                type_raz = re.search(pat_type, type_raz)[0]
-            except:
-                type_raz = None
+      try:
+          pat_type = re.compile('\d+')
+          type_raz = soup.find(text=re.compile('Корпус')).find_next('td').text
+          type_raz = re.search(pat_type, type_raz)[0]
+      except:
+          type_raz = None
 
-            try:
-                CCT = soup.find(text=re.compile('Цветовая температура')).find_next('td').text
-            except:
-                CCT = None
+      try:
+          CCT = soup.find(text=re.compile('Цветовая температура')).find_next('td').text
+      except:
+          CCT = None
 
-            try:
-                CRI = soup.find(text=re.compile('Индекс цветопередачи')).find_next('td').text
-            except:
-                CRI = None
+      try:
+          CRI = soup.find(text=re.compile('Индекс цветопередачи')).find_next('td').text
+      except:
+          CRI = None
 
-            try:
-                brand = soup.find(text=re.compile('Производитель')).find_next('td').text
-            except:
-                brand = None
+      try:
+          brand = soup.find(text=re.compile('Производитель')).find_next('td').text
+      except:
+          brand = None
 
+      series = None
+      try:
+          ibin = soup.find(text=re.compile('Ток')).find_next('td').text
+      except:
+          ibin = None
+
+      try:
+          Iмакс = soup.find(text=re.compile('Максимальный ток')).find_next('td').text
+      except:
+          Iмакс = None
+
+      try:
+          Фмин = soup.find(text=re.compile('Световой поток')).find_next('td').text
+      except:
+          Фмин = None
+
+      Фтип = None
+      Фмакс = None
+
+      # STATISCTICS FOR AVARAGE
+      try:
+          Uтип = soup.find(text=re.compile('Напряжение тип.')).find_next('td').text
+          Uмин = Uтип.split('-')[0].replace(',', '.')
+          Uмакс = Uтип.split('-')[-1].replace(',', '.')
+          Uмин = float(Uмин)
+          Uмакс = float(Uмакс)
+          Uном_В = round((Uмин + Uмакс) / 2)
+      except:
+          Uтип = None
+          Uмин = None
+          Uмакс = None
+          Uном_В = None
+      try:
+          Datasheet = soup.find_all('td', {'itemprop': 'value'})[-1].find('a').get('href')
+          Datasheet = 'https://e-neon.ru' + Datasheet
+      except:
+          Datasheet = None
+
+      with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+          datawriter = csv.writer(csvfile, delimiter=',',
+                                  quotechar='"', quoting=csv.QUOTE_MINIMAL)
+          datawriter.writerow(
+              [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
+                  price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
+                  Uтип] + [
+                  Uмакс] + [Datasheet])
+
+
+def second():
+    CONCURENT = 'Планар'
+    ALL_URLS = []
+    ALL_PRICE = []
+    browser = webdriver.Firefox(executable_path=r'/home/appuser/venv/bin/geckodriver.exe', options=firefoxOptions)
+    for link in all_links1:
+        browser.implicitly_wait(7)
+        browser.get(link)
+        time.sleep(4)
+        but = browser.find_element(By.XPATH, "//select[@class = 'group-sm ng-pristine ng-valid']").click()
+        #     browser.execute_script("arguments[0].click();", but)
+        time.sleep(2)
+        but_click = browser.find_element(By.XPATH, "//option[@value = '150']").click()
+        time.sleep(2)
+        print(link)
+        html = browser.page_source
+        soup = BeautifulSoup(html, 'lxml')
+        all_urls = soup.find_all('a', {'class': 'ng-binding'})
+        all_urls_ = [i.get('href') for i in all_urls]
+        all_urls_ = ['https://planar.spb.ru' + i for i in all_urls_ if i != '#']
+        prices = soup.find_all('span', {'class': 'ng-scope ng-binding'})
+        prices_all = [i.text for i in prices]
+        ALL_PRICE.extend(prices_all)
+        print('Общее колво URL 2 сайт - ', all_urls_)
+        ALL_URLS.extend(all_urls_)
+
+    dict_ur_price = dict(zip(ALL_URLS, ALL_PRICE))
+    browser.quit()
+
+    for k, v in dict_ur_price.items():
+        res = requests.get(k)
+        time.sleep(0.7)
+        print('work - ', k)
+        now_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        soup = BeautifulSoup(res.text, 'lxml')
+        articl = soup.find('h1', {'class': 'product-card__title'}).text.split(',')[0]
+        nalich_f = soup.find(text=re.compile('В наличии на складе')).find_next('span').text.replace('шт', '')
+        price = v
+        try:
+            type_raz = soup.find(text=re.compile('Типоразмер  LED')).find_next('span').text
+        except:
+            type_raz = None
+
+        try:
+            CRI = soup.find(text=re.compile('CRI Ra, не менее')).find_next('span').text
+        except:
+            CRI = None
+
+        try:
+            pat_CCT = re.compile(r'\d+')
+            CCT = soup.find(text=re.compile('CCT тип, K')).find_next('span').text.replace('+', '')
+            CCT = re.search(pat_CCT, CCT)[0]
+        except Exception as ex:
+            print(ex)
+            CCT = None
+
+        try:
+            brand = soup.find(text=re.compile('Производитель')).find_next('span').text
+        except:
+            brand = None
+
+        try:
+            series = soup.find(text=re.compile('Семейство')).find_next('span').text
+        except:
             series = None
-            try:
-                ibin = soup.find(text=re.compile('Ток')).find_next('td').text
-            except:
-                ibin = None
 
-            try:
-                Iмакс = soup.find(text=re.compile('Максимальный ток')).find_next('td').text
-            except:
-                Iмакс = None
+        ibin = None
 
-            try:
-                Фмин = soup.find(text=re.compile('Световой поток')).find_next('td').text
-            except:
-                Фмин = None
+        try:
+            Iмакс = soup.find(text=re.compile('Ток пр. макс, мА')).find_next('span').text
+        except:
+            Iмакс = None
 
-            Фтип = None
+        Фмин = None
+        Фтип = None
+        try:
+            Фмакс = soup.find(text=re.compile('Свет. поток макс, лм')).find_next('span').text
+        except:
             Фмакс = None
 
-            # STATISCTICS FOR AVARAGE
-            try:
-                Uтип = soup.find(text=re.compile('Напряжение тип.')).find_next('td').text
-                Uмин = Uтип.split('-')[0].replace(',', '.')
-                Uмакс = Uтип.split('-')[-1].replace(',', '.')
-                Uмин = float(Uмин)
-                Uмакс = float(Uмакс)
-                Uном_В = round((Uмин + Uмакс) / 2)
-            except:
-                Uтип = None
-                Uмин = None
-                Uмакс = None
-                Uном_В = None
-            try:
-                Datasheet = soup.find_all('td', {'itemprop': 'value'})[-1].find('a').get('href')
-                Datasheet = 'https://e-neon.ru' + Datasheet
-            except:
-                Datasheet = None
+        # STATISCTICS FOR AVARAGE
+        try:
+            Uтип = soup.find(text=re.compile('Напряжение тип, В')).find_next('span').text
+            Uтип = float(Uтип)
+            Uном_В = round((Uтип))
+        except:
+            Uтип = None
+            Uном_В = None
+        Uмин = None
+        Uмакс = None
 
-            with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
-                datawriter = csv.writer(csvfile, delimiter=',',
-                                        quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                datawriter.writerow(
-                    [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
-                        price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
-                        Uтип] + [
-                        Uмакс] + [Datasheet])
+        try:
+            Datasheet = soup.find('a', {'class': 'product-card-content__wrapper'}).get('href')
+        except:
+            Datasheet = None
+
+        with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+            datawriter = csv.writer(csvfile, delimiter=',',
+                                    quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            datawriter.writerow(
+                [now_date] + [CONCURENT] + [k] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
+                    price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
+                    Uтип] + [
+                    Uмакс] + [Datasheet])
 
 
-    def second():
-        CONCURENT = 'Планар'
-        ALL_URLS = []
-        ALL_PRICE = []
-        browser = webdriver.Firefox(executable_path=r'/home/appuser/venv/bin/geckodriver.exe', options=firefoxOptions)
-        for link in all_links1:
-            browser.implicitly_wait(7)
-            browser.get(link)
-            time.sleep(4)
-            but = browser.find_element(By.XPATH, "//select[@class = 'group-sm ng-pristine ng-valid']").click()
-            #     browser.execute_script("arguments[0].click();", but)
-            time.sleep(2)
-            but_click = browser.find_element(By.XPATH, "//option[@value = '150']").click()
-            time.sleep(2)
-            print(link)
-            html = browser.page_source
-            soup = BeautifulSoup(html, 'lxml')
-            all_urls = soup.find_all('a', {'class': 'ng-binding'})
-            all_urls_ = [i.get('href') for i in all_urls]
-            all_urls_ = ['https://planar.spb.ru' + i for i in all_urls_ if i != '#']
-            prices = soup.find_all('span', {'class': 'ng-scope ng-binding'})
-            prices_all = [i.text for i in prices]
-            ALL_PRICE.extend(prices_all)
-            print('Общее колво URL 2 сайт - ', all_urls_)
-            ALL_URLS.extend(all_urls_)
-
-        dict_ur_price = dict(zip(ALL_URLS, ALL_PRICE))
-        browser.quit()
-
-        for k, v in dict_ur_price.items():
-            res = requests.get(k)
-            time.sleep(0.7)
-            print('work - ', k)
-            now_date = datetime.datetime.now().strftime("%Y-%m-%d")
-            soup = BeautifulSoup(res.text, 'lxml')
-            articl = soup.find('h1', {'class': 'product-card__title'}).text.split(',')[0]
-            nalich_f = soup.find(text=re.compile('В наличии на складе')).find_next('span').text.replace('шт', '')
-            price = v
-            try:
-                type_raz = soup.find(text=re.compile('Типоразмер  LED')).find_next('span').text
-            except:
-                type_raz = None
-
-            try:
-                CRI = soup.find(text=re.compile('CRI Ra, не менее')).find_next('span').text
-            except:
-                CRI = None
-
-            try:
-                pat_CCT = re.compile(r'\d+')
-                CCT = soup.find(text=re.compile('CCT тип, K')).find_next('span').text.replace('+', '')
-                CCT = re.search(pat_CCT, CCT)[0]
-            except Exception as ex:
-                print(ex)
-                CCT = None
-
-            try:
-                brand = soup.find(text=re.compile('Производитель')).find_next('span').text
-            except:
-                brand = None
-
-            try:
-                series = soup.find(text=re.compile('Семейство')).find_next('span').text
-            except:
-                series = None
-
-            ibin = None
-
-            try:
-                Iмакс = soup.find(text=re.compile('Ток пр. макс, мА')).find_next('span').text
-            except:
-                Iмакс = None
-
-            Фмин = None
-            Фтип = None
-            try:
-                Фмакс = soup.find(text=re.compile('Свет. поток макс, лм')).find_next('span').text
-            except:
-                Фмакс = None
-
-            # STATISCTICS FOR AVARAGE
-            try:
-                Uтип = soup.find(text=re.compile('Напряжение тип, В')).find_next('span').text
-                Uтип = float(Uтип)
-                Uном_В = round((Uтип))
-            except:
-                Uтип = None
-                Uном_В = None
-            Uмин = None
-            Uмакс = None
-
-            try:
-                Datasheet = soup.find('a', {'class': 'product-card-content__wrapper'}).get('href')
-            except:
-                Datasheet = None
-
-            with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
-                datawriter = csv.writer(csvfile, delimiter=',',
-                                        quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                datawriter.writerow(
-                    [now_date] + [CONCURENT] + [k] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
-                        price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
-                        Uтип] + [
-                        Uмакс] + [Datasheet])
-
-
-    def third():
-        CONCURENT = 'Платан'
-        ALL_URLS = []
-        for lin in all_links2:
-            print(lin)
-            res = requests.get(lin)
-            time.sleep(0.7)
+def third():
+    CONCURENT = 'Платан'
+    ALL_URLS = []
+    for lin in all_links2:
+        print(lin)
+        res = requests.get(lin)
+        time.sleep(0.7)
+        soup = BeautifulSoup(res.text, 'lxml')
+        all_links = soup.find_all('a', {'class': 'link'})
+        all_links_ = [i.get('href') for i in all_links]
+        all_links_ = ['https://www.platan.ru' + i for i in all_links_ if i != None and 'id' in i]
+        ALL_URLS.extend(all_links_)
+        pag = soup.find_all('span', {'id': 'pagination1'})[-1].find('b').text
+        pag = int(pag)
+        for num in range(2, pag + 1):
+            li = lin.replace('0w', f'{num}w')
+            print(li)
+            res = requests.get(li)
             soup = BeautifulSoup(res.text, 'lxml')
             all_links = soup.find_all('a', {'class': 'link'})
             all_links_ = [i.get('href') for i in all_links]
             all_links_ = ['https://www.platan.ru' + i for i in all_links_ if i != None and 'id' in i]
             ALL_URLS.extend(all_links_)
-            pag = soup.find_all('span', {'id': 'pagination1'})[-1].find('b').text
-            pag = int(pag)
-            for num in range(2, pag + 1):
-                li = lin.replace('0w', f'{num}w')
-                print(li)
-                res = requests.get(li)
-                soup = BeautifulSoup(res.text, 'lxml')
-                all_links = soup.find_all('a', {'class': 'link'})
-                all_links_ = [i.get('href') for i in all_links]
-                all_links_ = ['https://www.platan.ru' + i for i in all_links_ if i != None and 'id' in i]
-                ALL_URLS.extend(all_links_)
 
-        for l in ALL_URLS:
-            time.sleep(0.7)
-            print('Work - ', l)
-            now_date = datetime.datetime.now().strftime("%Y-%m-%d")
-            res = requests.get(l)
-            pattern = re.compile(r'\d+')
-            pattern1 = re.compile(r'\d+ шт')
-            soup = BeautifulSoup(res.text, 'lxml')
+    for l in ALL_URLS:
+        time.sleep(0.7)
+        print('Work - ', l)
+        now_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        res = requests.get(l)
+        pattern = re.compile(r'\d+')
+        pattern1 = re.compile(r'\d+ шт')
+        soup = BeautifulSoup(res.text, 'lxml')
 
-            all_fetch = soup.find('h1', {'itemprop': 'name'}).text
+        all_fetch = soup.find('h1', {'itemprop': 'name'}).text
 
-            try:
-                articl = all_fetch.split(',')[0]
-            except:
-                articl = None
+        try:
+            articl = all_fetch.split(',')[0]
+        except:
+            articl = None
 
-            patern_svet = re.compile(r'светодиод \d+')
-            try:
-                type_raz = re.search(patern_svet, all_fetch)[0]
-            except:
-                type_raz = None
+        patern_svet = re.compile(r'светодиод \d+')
+        try:
+            type_raz = re.search(patern_svet, all_fetch)[0]
+        except:
+            type_raz = None
 
-            pattern_cct = re.compile(r'\d+K')
-            try:
-                CCT = re.search(pattern_cct, all_fetch)[0].replace('K', '')
-            except:
-                CCT = None
+        pattern_cct = re.compile(r'\d+K')
+        try:
+            CCT = re.search(pattern_cct, all_fetch)[0].replace('K', '')
+        except:
+            CCT = None
 
-            pattern_cri = re.compile(r'CRI\d+')
-            try:
-                CRI = re.search(pattern_cri, all_fetch)[0]
-            except:
-                CRI = None
+        pattern_cri = re.compile(r'CRI\d+')
+        try:
+            CRI = re.search(pattern_cri, all_fetch)[0]
+        except:
+            CRI = None
 
-            try:
-                brand = soup.find(text=re.compile('Производитель')).find_next('a').text
-            except:
-                brand = None
+        try:
+            brand = soup.find(text=re.compile('Производитель')).find_next('a').text
+        except:
+            brand = None
 
-            pattern_u = re.compile(r',.\S+В')
-            try:
-                Uтип = re.search(pattern_u, all_fetch)[0]
-                Uтип = Uтип.split(',')[-1]
-                Uтип = Uтип.replace('В', '').strip()
-                Uтип = float(Uтип)
-                Uном_В = round((Uтип))
-            except:
-                Uтип = None
-                Uном_В = None
+        pattern_u = re.compile(r',.\S+В')
+        try:
+            Uтип = re.search(pattern_u, all_fetch)[0]
+            Uтип = Uтип.split(',')[-1]
+            Uтип = Uтип.replace('В', '').strip()
+            Uтип = float(Uтип)
+            Uном_В = round((Uтип))
+        except:
+            Uтип = None
+            Uном_В = None
 
-            try:
-                price = soup.find_all('td', {'class': 'left-align'})
-                price = [i.text for i in price]
-                price = price[-1].split('-')[-1]
-                price = re.search(pattern, price)[0]
-                price = float(price)
-            except:
-                price = None
+        try:
+            price = soup.find_all('td', {'class': 'left-align'})
+            price = [i.text for i in price]
+            price = price[-1].split('-')[-1]
+            price = re.search(pattern, price)[0]
+            price = float(price)
+        except:
+            price = None
 
-            try:
-                nalich_f = soup.find('tr', {'style': 'background-color: #;'}).text.replace('\xa0', '').replace('\n',
-                                                                                                               ' ')
-                nalich_f = re.search(pattern1, nalich_f)[0]
-                nalich_f = nalich_f.split(' ')[0]
-            except:
-                nalich_f = None
+        try:
+            nalich_f = soup.find('tr', {'style': 'background-color: #;'}).text.replace('\xa0', '').replace('\n',
+                                                                                                           ' ')
+            nalich_f = re.search(pattern1, nalich_f)[0]
+            nalich_f = nalich_f.split(' ')[0]
+        except:
+            nalich_f = None
 
-            series = None
-            ibin = None
-            Iмакс = None
-            Фмин = None
-            Фтип = None
-            Фмакс = None
-            Uмин = None
-            Uмакс = None
-            Datasheet = None
+        series = None
+        ibin = None
+        Iмакс = None
+        Фмин = None
+        Фтип = None
+        Фмакс = None
+        Uмин = None
+        Uмакс = None
+        Datasheet = None
 
-            with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
-                datawriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                datawriter.writerow(
-                    [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
-                        price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
-                        Uтип] + [
-                        Uмакс] + [Datasheet])
+        with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+            datawriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            datawriter.writerow(
+                [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
+                    price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
+                    Uтип] + [
+                    Uмакс] + [Datasheet])
 
 
-    def forth():
-        CONCURENT = 'Symmetron'
-        ALL_LINKS = []
-        for i in all_links3:
-            print(i)
-            res = requests.get(i)
+def forth():
+    CONCURENT = 'Symmetron'
+    ALL_LINKS = []
+    for i in all_links3:
+        print(i)
+        res = requests.get(i)
+        soup = BeautifulSoup(res.text, 'lxml')
+        links_all = soup.find_all('a', {'class': 'item-info__fullLink'})
+        links_all_ = ['https://www.symmetron.ru' + i.get('href') for i in links_all]
+        ALL_LINKS.extend(links_all_)
+        for num in range(2, 19):
+            time.sleep(1)
+            ur = f'{i}?PAGEN_1={num}'
+            res = requests.get(ur)
+            print(ur)
             soup = BeautifulSoup(res.text, 'lxml')
             links_all = soup.find_all('a', {'class': 'item-info__fullLink'})
             links_all_ = ['https://www.symmetron.ru' + i.get('href') for i in links_all]
             ALL_LINKS.extend(links_all_)
-            for num in range(2, 19):
-                time.sleep(1)
-                ur = f'{i}?PAGEN_1={num}'
-                res = requests.get(ur)
-                print(ur)
-                soup = BeautifulSoup(res.text, 'lxml')
-                links_all = soup.find_all('a', {'class': 'item-info__fullLink'})
-                links_all_ = ['https://www.symmetron.ru' + i.get('href') for i in links_all]
-                ALL_LINKS.extend(links_all_)
 
-        for l in ALL_LINKS:
-            print(l)
-            now_date = datetime.datetime.now().strftime("%Y-%m-%d")
-            response = requests.get(l)
-            soup = BeautifulSoup(response.text, 'lxml')
+    for l in ALL_LINKS:
+        print(l)
+        now_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        response = requests.get(l)
+        soup = BeautifulSoup(response.text, 'lxml')
 
-            try:
-                articl = soup.find('h1').text.replace('\n', '').strip().split(' ')[0]
-            except:
-                articl = None
+        try:
+            articl = soup.find('h1').text.replace('\n', '').strip().split(' ')[0]
+        except:
+            articl = None
 
-            try:
-                type_raz = soup.find(text=re.compile('Типоразмер')).find_next('span').find_next('span').text
-            except:
-                type_raz = None
+        try:
+            type_raz = soup.find(text=re.compile('Типоразмер')).find_next('span').find_next('span').text
+        except:
+            type_raz = None
 
-            try:
-                CCT = soup.find(text=re.compile("CCT тип.")).find_next('span').find_next('span').text
-                pat_cct = re.compile(r'\d+')
-                CCT = re.search(pat_cct, CCT)[0]
-            except:
-                CCT = None
+        try:
+            CCT = soup.find(text=re.compile("CCT тип.")).find_next('span').find_next('span').text
+            pat_cct = re.compile(r'\d+')
+            CCT = re.search(pat_cct, CCT)[0]
+        except:
+            CCT = None
 
-            try:
-                CRI = soup.find(text=re.compile("CRI,Ra")).find_next('span').find_next('span').text
-            except:
-                CRI = None
+        try:
+            CRI = soup.find(text=re.compile("CRI,Ra")).find_next('span').find_next('span').text
+        except:
+            CRI = None
 
-            try:
-                brand = soup.find(text=re.compile(" Производитель ")).find_next('span').find_next('span').text
-            except:
-                brand = None
+        try:
+            brand = soup.find(text=re.compile(" Производитель ")).find_next('span').find_next('span').text
+        except:
+            brand = None
 
-            try:
-                price = soup.find('span', {'class': 'quantity-price'}).text.split(' ')[0]
-            except:
-                price = None
+        try:
+            price = soup.find('span', {'class': 'quantity-price'}).text.split(' ')[0]
+        except:
+            price = None
 
-            try:
-                nalich_f = soup.find('div', {'class': 'totalIn'}).text.replace('\n', '').strip()
-                pat_nal = re.compile(r'\d+')
-                nalich_f = re.search(pat_nal, nalich_f)[0]
-            except:
-                nalich_f = None
-            try:
-                series = soup.find(text=re.compile("Серия")).find_next('span').find_next('span').text
-            except:
-                series = None
+        try:
+            nalich_f = soup.find('div', {'class': 'totalIn'}).text.replace('\n', '').strip()
+            pat_nal = re.compile(r'\d+')
+            nalich_f = re.search(pat_nal, nalich_f)[0]
+        except:
+            nalich_f = None
+        try:
+            series = soup.find(text=re.compile("Серия")).find_next('span').find_next('span').text
+        except:
+            series = None
 
-            text = soup.find('section', {'class': 'detail'}).text.replace('\n', ' ').replace('\r', ' ').strip()
-            try:
-                if_bin_pat = re.compile(r'If\(bin\): \d+ мА')
-                ibin = re.search(if_bin_pat, text)[0].split(':')[-1].strip().split(' ')[0]
-            except:
-                ibin = None
-            try:
-                imax_pat = re.compile(r'If\(max\): \d+ мА')
-                Iмакс = re.search(imax_pat, text)[0].split(':')[-1].strip().split(' ')[0]
-            except:
-                Iмакс = None
+        text = soup.find('section', {'class': 'detail'}).text.replace('\n', ' ').replace('\r', ' ').strip()
+        try:
+            if_bin_pat = re.compile(r'If\(bin\): \d+ мА')
+            ibin = re.search(if_bin_pat, text)[0].split(':')[-1].strip().split(' ')[0]
+        except:
+            ibin = None
+        try:
+            imax_pat = re.compile(r'If\(max\): \d+ мА')
+            Iмакс = re.search(imax_pat, text)[0].split(':')[-1].strip().split(' ')[0]
+        except:
+            Iмакс = None
 
-            try:
-                Фмин_pat = re.compile(r'Φv.\(bin\)min: \d+ лм')
-                Фмин = re.search(Фмин_pat, text)[0].split(':')[-1].strip().split(' ')[0]
-            except:
-                Фмин = None
+        try:
+            Фмин_pat = re.compile(r'Φv.\(bin\)min: \d+ лм')
+            Фмин = re.search(Фмин_pat, text)[0].split(':')[-1].strip().split(' ')[0]
+        except:
+            Фмин = None
 
-            try:
-                Фмакс_pat = re.compile(r'Φv.\(bin\)max: \d+ лм')
-                Фмакс = re.search(Фмакс_pat, text)[0].split(':')[-1].strip().split(' ')[0]
-            except:
-                Фмакс = None
+        try:
+            Фмакс_pat = re.compile(r'Φv.\(bin\)max: \d+ лм')
+            Фмакс = re.search(Фмакс_pat, text)[0].split(':')[-1].strip().split(' ')[0]
+        except:
+            Фмакс = None
 
-            Фтип = None
+        Фтип = None
 
-            try:
-                Uмин_pat = re.compile(r'Uf\(min\):.+В;')
-                Uмин = re.search(Uмин_pat, text)[0].replace('В', '').replace(';', '').split(':')[-1].strip().split(' ')[
-                    0]
-                Uмин = float(Uмин.replace(',', '.'))
-            except:
-                Uмин = None
+        try:
+            Uмин_pat = re.compile(r'Uf\(min\):.+В;')
+            Uмин = re.search(Uмин_pat, text)[0].replace('В', '').replace(';', '').split(':')[-1].strip().split(' ')[
+                0]
+            Uмин = float(Uмин.replace(',', '.'))
+        except:
+            Uмин = None
 
-            try:
-                Uмакс_pat = re.compile(r'Uf\(max\):.+В[.;]')
-                Uмакс = \
-                re.search(Uмакс_pat, text)[0].replace('В', '').replace(';', '').split(':')[-1].strip().split(' ')[0]
-                Uмакс = float(Uмакс.replace(',', '.'))
-            except:
-                Uмакс = None
+        try:
+            Uмакс_pat = re.compile(r'Uf\(max\):.+В[.;]')
+            Uмакс = \
+            re.search(Uмакс_pat, text)[0].replace('В', '').replace(';', '').split(':')[-1].strip().split(' ')[0]
+            Uмакс = float(Uмакс.replace(',', '.'))
+        except:
+            Uмакс = None
 
-            if Uмакс and Uмин:
-                Uном_В = round((Uмин + Uмакс) / 2)
+        if Uмакс and Uмин:
+            Uном_В = round((Uмин + Uмакс) / 2)
+        else:
+            if Uмакс:
+                Uном_В = round(Uмакс)
+            elif Uмин:
+                Uном_В = round(Uмин)
             else:
-                if Uмакс:
-                    Uном_В = round(Uмакс)
-                elif Uмин:
-                    Uном_В = round(Uмин)
-                else:
-                    Uном_В = None
+                Uном_В = None
 
-            try:
-                Datasheet = soup.find_all('a', {'target': '__blank'})
-                Datasheet = [i.get('href') for i in Datasheet]
-                Datasheet = set(Datasheet)
-                Datasheet = list(Datasheet)
-                Datasheet = ', '.join(Datasheet)
-            except:
-                Datasheet = None
+        try:
+            Datasheet = soup.find_all('a', {'target': '__blank'})
+            Datasheet = [i.get('href') for i in Datasheet]
+            Datasheet = set(Datasheet)
+            Datasheet = list(Datasheet)
+            Datasheet = ', '.join(Datasheet)
+        except:
+            Datasheet = None
 
-            Uтип = None
+        Uтип = None
 
-            with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
-                datawriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                datawriter.writerow(
-                    [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
-                        price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
-                        Uтип] + [
-                        Uмакс] + [Datasheet])
+        with open(f'PARSING.csv', 'a', newline='', encoding='utf-8') as csvfile:
+            datawriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            datawriter.writerow(
+                [now_date] + [CONCURENT] + [l] + [articl] + [type_raz] + [CCT] + [CRI] + [Uном_В] + [brand] + [
+                    price] + [nalich_f] + [series] + [ibin] + [Iмакс] + [Фмин] + [Фтип] + [Фмакс] + [Uмин] + [
+                    Uтип] + [
+                    Uмакс] + [Datasheet])
 
 
-    def clean_data():
-        df_all = pd.read_csv('PARSING.csv')
-        df_all = df_all.drop_duplicates(subset=['Дата', 'Артикул'])
-        df_all = df_all.dropna(subset=['Uнoм,В', 'CRI', 'Цена', 'Остаток', 'CCT'])
-        df_all['Цена'] = df_all['Цена'].fillna('0')
-        df_all['Остаток'] = df_all['Остаток'].fillna('0')
-        df_all = df_all.reset_index()
-        del df_all['index']
-        pattern = re.compile(r'\d+')
-        df_all['Остаток'] = df_all['Остаток'].apply(lambda x: re.search(pattern, str(x))[0])
-        df_all['Цена'] = df_all['Цена'].replace(r'[а-яА-Я]', np.nan, regex=True)
-        df_all['Цена'] = df_all['Цена'].apply(lambda x: str(x).replace(',', '.').strip())
-        df_all['Цена'] = df_all['Цена'].apply(lambda x: str(x).strip())
-        df_all['Остаток'] = df_all['Остаток'].fillna('0')
-        df_all['Цена'] = df_all['Цена'].apply(lambda x: float(x))
-        df_all['Остаток'] = df_all['Остаток'].apply(lambda x: float(x))
-        trual = df_all.sort_values(by=['Артикул', 'Дата'])
-        trual['Дельта цена'] = trual[['Артикул', 'Цена']].groupby('Артикул').diff()
-        trual['Дельта Остаток'] = trual[['Артикул', 'Остаток']].groupby('Артикул').diff()
-        trual['Цена'] = trual['Цена'].fillna(float(0))
-        trual['Дельта цена'] = trual['Дельта цена'].fillna('-')
-        trual['Дельта Остаток'] = trual['Дельта Остаток'].fillna('-')
-        trual = trual.fillna('')
-        trual = trual.reset_index()
-        del trual['index']
-        trual['Дельта цена'] = trual['Дельта цена'].apply(lambda x: str(x).replace('-', ''))
-        trual['Дельта Остаток'] = trual['Дельта Остаток'].apply(lambda x: str(x).replace('-', ''))
-        # trual_2 = trual.sort_values(by=['Дата', 'Дельта цена'], ascending=False, na_position='last')
-        # trual_2 = trual_2.reset_index()
-        # del trual_2['index']
-        # trual_2['Дельта цена'] = trual_2['Дельта цена'].apply(lambda x: round(float(x), 2) if x != '' else '')
-        # trual_2['Дельта Остаток'] = trual_2['Дельта Остаток'].apply(lambda x: round(float(x), 2) if x != '' else '')
-        return trual
+def clean_data():
+    df_all = pd.read_csv('PARSING.csv')
+    df_all = df_all.drop_duplicates(subset=['Дата', 'Артикул'])
+    df_all = df_all.dropna(subset=['Uнoм,В', 'CRI', 'Цена', 'Остаток', 'CCT'])
+    df_all['Цена'] = df_all['Цена'].fillna('0')
+    df_all['Остаток'] = df_all['Остаток'].fillna('0')
+    df_all = df_all.reset_index()
+    del df_all['index']
+    pattern = re.compile(r'\d+')
+    df_all['Остаток'] = df_all['Остаток'].apply(lambda x: re.search(pattern, str(x))[0])
+    df_all['Цена'] = df_all['Цена'].replace(r'[а-яА-Я]', np.nan, regex=True)
+    df_all['Цена'] = df_all['Цена'].apply(lambda x: str(x).replace(',', '.').strip())
+    df_all['Цена'] = df_all['Цена'].apply(lambda x: str(x).strip())
+    df_all['Остаток'] = df_all['Остаток'].fillna('0')
+    df_all['Цена'] = df_all['Цена'].apply(lambda x: float(x))
+    df_all['Остаток'] = df_all['Остаток'].apply(lambda x: float(x))
+    trual = df_all.sort_values(by=['Артикул', 'Дата'])
+    trual['Дельта цена'] = trual[['Артикул', 'Цена']].groupby('Артикул').diff()
+    trual['Дельта Остаток'] = trual[['Артикул', 'Остаток']].groupby('Артикул').diff()
+    trual['Цена'] = trual['Цена'].fillna(float(0))
+    trual['Дельта цена'] = trual['Дельта цена'].fillna('-')
+    trual['Дельта Остаток'] = trual['Дельта Остаток'].fillna('-')
+    trual = trual.fillna('')
+    trual = trual.reset_index()
+    del trual['index']
+    trual['Дельта цена'] = trual['Дельта цена'].apply(lambda x: str(x).replace('-', ''))
+    trual['Дельта Остаток'] = trual['Дельта Остаток'].apply(lambda x: str(x).replace('-', ''))
+    # trual_2 = trual.sort_values(by=['Дата', 'Дельта цена'], ascending=False, na_position='last')
+    # trual_2 = trual_2.reset_index()
+    # del trual_2['index']
+    # trual_2['Дельта цена'] = trual_2['Дельта цена'].apply(lambda x: round(float(x), 2) if x != '' else '')
+    # trual_2['Дельта Остаток'] = trual_2['Дельта Остаток'].apply(lambda x: round(float(x), 2) if x != '' else '')
+    return trual
 
 
-    def post_to_gs(name_1, df_1):
-        worksheet_1 = connect_to_google_sheet(name_1)
-        worksheet_1.clear()
-        set_with_dataframe(worksheet_1, df_1)
-        print('Post df_1 to gs')
+def post_to_gs(name_1, df_1):
+    worksheet_1 = connect_to_google_sheet(name_1)
+    worksheet_1.clear()
+    set_with_dataframe(worksheet_1, df_1)
+    print('Post df_1 to gs')
 
-    if __name__ == '__main__':
+if __name__ == '__main__':
+    st.title('Парсинг')
+    but = st.button('Пуск')
+    if but:
         first()
         second()
         third()
@@ -617,3 +617,4 @@ if button:
         trual = clean_data()
         name_1 = 'База данных'
         post_to_gs(name_1, trual)
+        st.write('Post to GS')

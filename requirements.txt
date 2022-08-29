@@ -1,4 +1,4 @@
-streamlit==1.12.2
+streamlit==1.11.1
 gitdb==4.0.9
 GitPython==3.1.27
 lxml==4.8.0

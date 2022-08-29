@@ -123,7 +123,7 @@ def first():
 
   for l in ALL_URLS:
       time.sleep(0.5)
-      print('W - ', l)
+      st.write('W - ', l)
       now_date = datetime.datetime.now().strftime("%Y-%m-%d")
       res = requests.get(l)
       soup = BeautifulSoup(res.text, 'lxml')
@@ -238,7 +238,7 @@ def second():
     for k, v in dict_ur_price.items():
         res = requests.get(k)
         time.sleep(0.7)
-        print('work - ', k)
+        st.write('work - ', k)
         now_date = datetime.datetime.now().strftime("%Y-%m-%d")
         soup = BeautifulSoup(res.text, 'lxml')
         articl = soup.find('h1', {'class': 'product-card__title'}).text.split(',')[0]
@@ -338,7 +338,7 @@ def third():
 
     for l in ALL_URLS:
         time.sleep(0.7)
-        print('Work - ', l)
+        st.write('Work - ', l)
         now_date = datetime.datetime.now().strftime("%Y-%m-%d")
         res = requests.get(l)
         pattern = re.compile(r'\d+')
@@ -443,7 +443,7 @@ def forth():
             ALL_LINKS.extend(links_all_)
 
     for l in ALL_LINKS:
-        print(l)
+        st.write('Work', l)
         now_date = datetime.datetime.now().strftime("%Y-%m-%d")
         response = requests.get(l)
         soup = BeautifulSoup(response.text, 'lxml')

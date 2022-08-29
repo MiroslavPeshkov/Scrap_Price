@@ -7,8 +7,8 @@ import re
 import datetime
 import streamlit as st
 import numpy as np
-import os, shutil
 from shutil import which
+import os, sys
 import selenium
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC

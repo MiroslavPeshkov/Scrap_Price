@@ -35,7 +35,7 @@ from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
 
 firefoxOptions = Options()
-# FIREFOXPATH = which("firefox")
+FIREFOXPATH = which("firefox")
 user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"
 firefoxOptions.add_argument(f'user-agent={user_agent}')
 firefoxOptions.add_argument('--headless')
@@ -44,7 +44,7 @@ firefoxOptions.add_argument("--window-size=1920,1080")
 firefoxOptions.add_argument('--disable-dev-shm-usage')
 firefoxOptions.add_argument('--ignore-certificate-errors')
 firefoxOptions.add_argument('--allow-running-insecure-content')
-# firefoxOptions.binary = FIREFOXPATH
+firefoxOptions.binary = FIREFOXPATH
 
 all_links = ['https://e-neon.ru/svetodiodyi/',
              'https://e-neon.ru/moschnyie-svetodiodyi/']

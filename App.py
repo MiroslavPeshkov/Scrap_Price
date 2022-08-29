@@ -611,6 +611,6 @@ if __name__ == '__main__':
         third()
         forth()
         trual = clean_data()
-        name_1 = 'База данных'
+        name_1 = 'trial'
         post_to_gs(name_1, trual)
         st.write('Post to GS')

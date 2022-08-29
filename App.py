@@ -609,8 +609,8 @@ def post_to_gs(name_1, df_1):
 
 if __name__ == '__main__':
     if but:
-        first()
         second()
+        first()
         third()
         forth()
         trual = clean_data()
